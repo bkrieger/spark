@@ -1568,11 +1568,13 @@ class Analyzer(
       expr.find(_.isInstanceOf[Generator]).isDefined
     }
 
-    private def hasNestedGenerator(expr: NamedExpression): Boolean = expr match {
-      case UnresolvedAlias(_: Generator, _) => false
-      case Alias(_: Generator, _) => false
-      case MultiAlias(_: Generator, _) => false
-      case other => hasGenerator(other)
+    private def hasNestedGenerator(expr: NamedExpression): Boolean = {
+        CleanupAliases.trimNonTopLevelAliases(expr) match { 
+            case UnresolvedAlias(_: Generator, _) => false
+            case Alias(_: Generator, _) => false
+            case MultiAlias(_: Generator, _) => false
+            case other => hasGenerator(other)
+        }
     }
 
     private def trimAlias(expr: NamedExpression): Expression = expr match {
